@@ -1,0 +1,9 @@
+#That's setting specifically for OVH, you probably don't need it ;)
+SetEnv PHP_VER 5_TEST
+
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-f
+
+#You may need to delete "/bookmarklet-to-extension" part, depending on where you keep the files
+RewriteRule ^(.*)$ /bookmarklet-to-extension/index.php [QSA,L]
