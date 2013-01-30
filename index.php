@@ -9,9 +9,10 @@ $app->get('/', function () {
 $app->post('/', function () {
 
     $manifest = '{
- "background_page": "background.html",
+ "background": {"scripts": ["background.js"]},
  "browser_action": {
- "default_icon": "icon-128.png"
+ "default_icon": "icon-128.png",
+ "default_title": "'.htmlspecialchars($_POST['name']).'"
  },
  "name": "'.htmlspecialchars($_POST['name']).'",
  "description": "'.htmlspecialchars($_POST['desc']).' - Created with http://blog.self.li",
@@ -25,14 +26,13 @@ $app->post('/', function () {
      "http://*/*",
      "https://*/*"
  ],
- "version": "0.1"
+ "version": "0.1",
+ "manifest_version": 2
 }';
 
-    $background = '<script>
-    chrome.browserAction.onClicked.addListener(function(tab) {
-        chrome.tabs.executeScript(tab.id, {file: "bookmarklet.js"})
-    });
-</script>';
+    $background = 'chrome.browserAction.onClicked.addListener(function(tab) {
+    chrome.tabs.executeScript(tab.id, {file: "bookmarklet.js"})
+});';
 
     $bookmarklet = rawurldecode(stripslashes($_POST['bookmarklet']));
     if(substr($bookmarklet, 0, 11) == 'javascript:') {
@@ -46,13 +46,13 @@ $app->post('/', function () {
     $zip = new ZipArchive();
     $zip->open($file, ZipArchive::OVERWRITE);
 
-    $zip->addFromString('background.html', $background);
+    $zip->addFromString('background.js', $background);
     $zip->addFromString('manifest.json', $manifest);
     $zip->addFromString('bookmarklet.js', $bookmarklet);
     $zip->addFile('files/icon-16.png', 'icon-16.png');
     $zip->addFile('files/icon-48.png', 'icon-48.png');
     $zip->addFile('files/icon-128.png', 'icon-128.png');
-    
+
     $zip->close();
     header('Content-Type: application/zip');
     header('Content-Length: ' . filesize($file));
