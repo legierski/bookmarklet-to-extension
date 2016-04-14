@@ -110,6 +110,8 @@ body {
 .wrapper .go-back {
     display: block;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #ccc;
 }
 
