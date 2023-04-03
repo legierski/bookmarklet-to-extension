@@ -1,30 +1,29 @@
 <?php
-
-    $manifest = '{
- "background": {"scripts": ["background.js"]},
- "browser_action": {
- "default_icon": "icon-128.png",
- "default_title": "'.htmlspecialchars($_POST['name']).'"
- },
+ $manifest = '{
+ "background": { "service_worker": "background.js" },
  "name": "'.htmlspecialchars($_POST['name']).'",
  "description": "'.htmlspecialchars($_POST['desc']).' - Created with http://blog.self.li",
  "homepage_url": "http://blog.self.li/post/16366939413/how-to-convert-bookmarklet-to-chrome-extension",
  "icons": {
      "16": "icon-16.png",
      "48": "icon-48.png",
-     "128": "icon-128.png" },
+     "128": "icon-128.png" 
+ },
+ "action": {},
  "permissions": [
-     "tabs",
-     "http://*/*",
-     "https://*/*"
+    "activeTab",
+    "scripting"
  ],
  "version": "0.1",
- "manifest_version": 2
+ "manifest_version": 3
 }';
 
-    $background = 'chrome.browserAction.onClicked.addListener(function(tab) {
-    chrome.tabs.executeScript(tab.id, {file: "bookmarklet.js"})
-});';
+    $background = 'chrome.action.onClicked.addListener((tab) => {
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id, allFrames: true },
+            files: ["bookmarklet.js"],
+        });
+    });'
 
     $bookmarklet = rawurldecode(stripslashes($_POST['bookmarklet']));
     if(substr($bookmarklet, 0, 11) == 'javascript:') {
